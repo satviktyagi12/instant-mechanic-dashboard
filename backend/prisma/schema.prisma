@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING
+  ASSIGNED
+  MECHANIC_ON_THE_WAY
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum MechanicStatus {
+  AVAILABLE
+  BUSY
+  OFFLINE
+  ON_BREAK
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  address   String?
+  createdAt DateTime @default(now())
+
+  bookings Booking[]
+
+  @@index([createdAt])
+}
+
+model Mechanic {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  phone         String
+  status        MechanicStatus @default(AVAILABLE)
+  jobsCompleted Int            @default(0)
+  latitude      Float?
+  longitude     Float?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  bookings Booking[]
+
+  @@index([status])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  basePrice   Float
+  createdAt   DateTime @default(now())
+
+  bookings Booking[]
+
+  @@index([category])
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  bookingNumber String        @unique
+
+  customerId String
+  mechanicId String?
+  serviceId  String
+
+  vehicleMake   String
+  vehicleModel  String
+  vehicleNumber String
+  vehicleYear   Int?
+
+  status      BookingStatus @default(PENDING)
+  amount      Float
+  scheduledAt DateTime
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer Customer  @relation(fields: [customerId], references: [id])
+  mechanic Mechanic? @relation(fields: [mechanicId], references: [id])
+  service  Service   @relation(fields: [serviceId], references: [id])
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+  @@index([customerId])
+  @@index([mechanicId])
+}
