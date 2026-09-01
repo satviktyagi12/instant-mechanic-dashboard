@@ -1,6 +1,4 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
+const API_URL = "/backend-api";
 
 async function apiFetch<T>(
   endpoint: string,
@@ -80,9 +78,7 @@ export type DashboardResponse = {
 };
 
 export async function getDashboard(): Promise<DashboardResponse> {
-  return apiFetch<DashboardResponse>(
-    "/api/dashboard"
-  );
+  return apiFetch<DashboardResponse>("/api/dashboard");
 }
 
 /* =========================
@@ -174,28 +170,15 @@ export async function getBookings({
 } = {}): Promise<BookingsResponse> {
   const params = new URLSearchParams();
 
-  params.set(
-    "page",
-    String(page)
-  );
-
-  params.set(
-    "limit",
-    String(limit)
-  );
+  params.set("page", String(page));
+  params.set("limit", String(limit));
 
   if (search.trim()) {
-    params.set(
-      "search",
-      search.trim()
-    );
+    params.set("search", search.trim());
   }
 
   if (status) {
-    params.set(
-      "status",
-      status
-    );
+    params.set("status", status);
   }
 
   return apiFetch<BookingsResponse>(
@@ -212,9 +195,7 @@ export async function getBookingById(
   return apiFetch<{
     success: boolean;
     data: Booking;
-  }>(
-    `/api/bookings/${id}`
-  );
+  }>(`/api/bookings/${id}`);
 }
 
 export async function updateBookingStatus(
@@ -227,13 +208,10 @@ export async function updateBookingStatus(
   return apiFetch<{
     success: boolean;
     data: Booking;
-  }>(
-    `/api/bookings/${id}/status`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({
-        status,
-      }),
-    }
-  );
+  }>(`/api/bookings/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      status,
+    }),
+  });
 }
